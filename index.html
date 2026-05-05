@@ -13,7 +13,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-900">
 
-    <!-- Navigation -->
+    <!-- Updated Navigation with Full Name -->
     <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-green-100">
         <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
             <div>
@@ -32,8 +32,8 @@
             <div class="w-full md:w-1/2 flex justify-center">
                 <div class="relative group">
                     <div class="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur opacity-25"></div>
-                    <!-- FIXED IMAGE LINK BELOW -->
-                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1000" alt="Welcome to our Market" 
+                    <!-- Using a high-quality placeholder image to ensure it works immediately -->
+                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1000" alt="Fresh Produce" 
                          class="relative rounded-3xl shadow-2xl w-full max-w-md object-cover aspect-[4/5] border-8 border-white bg-green-100">
                 </div>
             </div>
@@ -55,7 +55,7 @@
     <main id="shop" class="max-w-7xl mx-auto px-4 py-16">
         <h3 class="text-3xl font-bold text-gray-900 mb-8 text-center md:text-left">Our Fresh Picks</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="product-grid">
-            <!-- Items load here -->
+            <!-- Items load via JavaScript below -->
         </div>
     </main>
 
@@ -85,6 +85,7 @@
     </div>
 
     <script>
+        // These are the products that will show up in the gray area
         const products = [
             { id: 1, name: "Premium Suki Beef Slices", price: 15.00, img: "🥩", category: "Meat" },
             { id: 2, name: "Fish Ball Mix (Large)", price: 8.50, img: "🍡", category: "Seafood" },
@@ -101,15 +102,18 @@
         let cart = [];
 
         function render() {
-            document.getElementById('product-grid').innerHTML = products.map(p => `
-                <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <div class="h-40 bg-gray-50 rounded-2xl mb-4 flex items-center justify-center text-6xl">${p.img}</div>
-                    <span class="text-[10px] font-bold text-green-600 uppercase tracking-widest">${p.category}</span>
-                    <h4 class="font-bold text-lg">${p.name}</h4>
-                    <p class="text-xl font-black mb-4">$${p.price.toFixed(2)}</p>
-                    <button onclick="addToCart(${p.id})" class="w-full bg-gray-100 py-3 rounded-xl font-bold hover:bg-green-600 hover:text-white transition">Add to Cart</button>
-                </div>
-            `).join('');
+            const grid = document.getElementById('product-grid');
+            if (grid) {
+                grid.innerHTML = products.map(p => `
+                    <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition">
+                        <div class="h-40 bg-gray-50 rounded-2xl mb-4 flex items-center justify-center text-6xl">${p.img}</div>
+                        <span class="text-[10px] font-bold text-green-600 uppercase tracking-widest">${p.category}</span>
+                        <h4 class="font-bold text-lg">${p.name}</h4>
+                        <p class="text-xl font-black mb-4">$${p.price.toFixed(2)}</p>
+                        <button onclick="addToCart(${p.id})" class="w-full bg-gray-100 py-3 rounded-xl font-bold hover:bg-green-600 hover:text-white transition">Add to Cart</button>
+                    </div>
+                `).join('');
+            }
         }
 
         function addToCart(id) {
@@ -136,6 +140,7 @@
             document.getElementById('success-msg').classList.remove('hidden');
         });
 
+        // This runs the function to show the products
         render();
     </script>
 </body>
