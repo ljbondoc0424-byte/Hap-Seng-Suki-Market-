@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hap Seng Suki Market - San Jose</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cart-sidebar { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
+        .cart-open .cart-sidebar { transform: translateX(0); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow sticky top-0 z-40 p-4 border-b border-green-100">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-green-700">Hap Seng Suki Market</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500">San Jose Occidental Mindoro</span>
+                <button onclick="toggleCart()" class="bg-green-600 text-white px-5 py-2.5 rounded-full font-semibold text-lg flex items-center gap-2 hover:bg-green-700 transition">
+                    🛒 Cart (<span id="cart-count">0</span>)
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section with AI Lady -->
+    <header class="bg-white py-16 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 items-center gap-12">
+            <div>
+                <img src="welcome-lady.jpg" alt="Welcome to Hap Seng Suki" class="rounded-3xl shadow-2xl w-full h-auto object-cover border-4 border-green-500">
+            </div>
+            <div class="text-center md:text-left">
+                <p class="text-green-600 font-bold mb-2">Kumusta! Welcome to</p>
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-6">Hap Seng Suki Market</h1>
+                <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+                    Bringing the freshest ingredients for your suki and hotpot straight from San Jose to your kitchen. We ensure quality, freshness, and convenience with every delivery.
+                </p>
+                <a href="#shop" class="bg-green-600 text-white text-xl px-12 py-4 rounded-full font-bold hover:bg-green-700 shadow-lg shadow-green-100 transition">Shop Fresh Groceries</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Product Grid Section -->
+    <main id="shop" class="max-w-7xl mx-auto px-4 py-16">
+        <div class="flex justify-between items-center mb-10 border-b pb-4">
+            <h2 class="text-4xl font-bold">Today's Fresh Picks</h2>
+            <div class="text-xl text-gray-600">Showing <span id="product-display-count">0</span> Items</div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" id="product-grid">
+            <!-- Products will be injected here by JS -->
+        </div>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white z-50 shadow-xl cart-sidebar p-6 flex flex-col">
+        <div id="cart-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Your Order</h2>
+                <button onclick="toggleCart()" class="text-gray-500 hover:text-black">Close [x]</button>
+            </div>
+            <div id="cart-items" class="space-y-4 mb-6 max-h-[50vh] overflow-y-auto"></div>
+            <hr class="mb-4">
+            <div class="flex justify-between font-bold text-xl mb-8 text-green-700">
+                <span>Total:</span><span id="cart-total">$0.00</span>
+            </div>
+            
+            <!-- Checkout Form -->
+            <form id="orderForm" class="space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <h3 class="font-semibold text-gray-700">Delivery Details</h3>
+                <input type="text" id="custName" placeholder="Full Name" class="w-full border p-3 rounded-lg" required>
+                <input type="email" id="custEmail" placeholder="Email Address" class="w-full border p-3 rounded-lg" required>
+                <input type="tel" id="custPhone" placeholder="Phone Number" class="w-full border p-3 rounded-lg" required>
+                <button type="submit" id="submitBtn" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition">Complete My Order</button>
+            </form>
+        </div>
+
+        <!-- Success Message -->
+        <div id="success-msg" class="hidden text-center py-20">
+            <div class="text-8xl mb-6">🛒💨</div>
+            <h2 class="text-3xl font-bold text-green-600 mb-3">Order Received!</h2>
+            <p class="text-gray-600 leading-relaxed">Thank you for shopping at Hap Seng Suki! We will confirm your order and provide payment details via call or email shortly.</p>
+            <button onclick="location.reload()" class="mt-8 text-green-700 underline font-semibold">Back to Shopping</button>
+        </div>
+    </div>
+
+    <!-- This line loads the product data -->
+    <script src="products.js"></script>
+    <script>
+        // Use your Google Apps Script URL here
+        const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+        let cart = [];
+
+        function renderProducts() {
+            // marketProducts comes from products.js
+            document.getElementById('product-display-count').innerText = marketProducts.length;
+            document.getElementById('product-grid').innerHTML = marketProducts.map(p => `
+                <div class="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition border border-gray-100 flex flex-col justify-between">
+                    <div>
+                        <div class="text-7xl mb-6 text-center bg-green-50 p-6 rounded-3xl">${p.img}</div>
+                        <span class="text-xs font-semibold text-green-600 uppercase bg-green-100 px-2.5 py-1 rounded-full">${p.category}</span>
+                        <h3 class="font-bold text-xl mt-3 mb-1">${p.name}</h3>
+                        <p class="text-green-700 font-extrabold text-2xl mb-5">$${p.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="w-full bg-gray-800 text-white py-3 rounded-xl hover:bg-green-600 transition font-semibold">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            cart.push(marketProducts.find(p => p.id === id));
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            document.getElementById('cart-items').innerHTML = cart.map((item, i) => `
+                <div class="flex justify-between items-center text-sm bg-green-50 p-2.5 rounded-lg">
+                    <span class="font-medium">${item.name}</span><span class="font-bold text-green-800">$${item.price.toFixed(2)}</span>
+                </div>
+            `).join('');
+            const total = cart.reduce((s, i) => s + i.price, 0);
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function toggleCart() { document.body.classList.toggle('cart-open'); document.getElementById('cart-overlay').classList.toggle('hidden'); }
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (cart.length === 0) return alert("Cart is empty!");
+            
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Processing Order...";
+            btn.disabled = true;
+
+            const orderData = {
+                name: document.getElementById('custName').value,
+                email: document.getElementById('custEmail').value,
+                phone: document.getElementById('custPhone').value,
+                items: cart.map(i => i.name).join(", "),
+                total: document.getElementById('cart-total').innerText
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(orderData)
+            })
+            .then(res => {
+                document.getElementById('cart-content').classList.add('hidden');
+                document.getElementById('success-msg').classList.remove('hidden');
+            })
+            .catch(err => alert("Error submitting order. Please try again."));
+        });
+
+        // Load the products
+        renderProducts();
+    </script>
+</body>
+</html>
